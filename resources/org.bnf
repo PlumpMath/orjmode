@@ -1,0 +1,22 @@
+(* Headline *)
+
+Headline    = Stars [<Spaces> Keyword] [<Spaces> Priority] [<Spaces> Title] [<Spaces> Tags]
+
+Stars       = #"\*+"
+
+Keyword     = "TODO" / "FEEDBACK" / "VERIFY" / "|" / "DONE" / "DELEGATED"
+
+Priority    = <"[#"> Letter <"]">
+
+Title       = TitleWord (<Spaces> TitleWord)*
+<TitleWord> = !(Tags | Priority) NotSpace
+
+Tags        = <":"> TagWord (<":"> TagWord)* <":">
+<TagWord>   = #"[a-zA-Z0-9_@#%]"+
+
+
+(* Utility *)
+
+<Letter>    = #"[a-zA-Z]"
+<Spaces>    = #"\s+"
+<NotSpace>  = #"[^\s]*";
