@@ -3,6 +3,6 @@
   (:require [instaparse.core :as insta])
   )
 
-(def parser
+(def line-parser
   (insta/parser (clojure.java.io/resource "org.bnf")))
 
