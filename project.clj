@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [instaparse "1.4.1"]
+                 [midje "1.8-alpha1"]
                  ]
   :main ^:skip-aot orjmode.core
   :target-path "target/%s"
