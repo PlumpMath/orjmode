@@ -1,22 +1,66 @@
 (* Headline *)
 
-Headline    = Stars [<Spaces> Keyword] [<Spaces> Priority] [<Spaces> Title] [<Spaces> Tags]
+<Line>  = Headline
+          / SpecialLine
+          / TimeStampLine
+          / PlanningLine
 
-Stars       = #"\*+"
+(* Headline *)
 
-Keyword     = "TODO" / "FEEDBACK" / "VERIFY" / "|" / "DONE" / "DELEGATED"
+Headline     = Stars [<Spaces> TitleKeyword] [<Spaces> Priority] [<Spaces> Title] [<Spaces> Tags]
+Stars        = #"\*+"
+TitleKeyword = "TODO" / "FEEDBACK" / "VERIFY" / "|" / "DONE" / "DELEGATED"
+Priority     = <"[#"> Letter <"]">
+Title        = (TimeStamp / TitleWord) (<Spaces> Title)* 
+TitleWord    = !(Tags / Priority) NotSpaceOrNewline
+Tags         = <":"> TagWord (<":"> TagWord)* <":">
+<TagWord>    = #"[a-zA-Z0-9_@#%]"+
 
-Priority    = <"[#"> Letter <"]">
+(* Special Blocks *)
+<SpecialLine>  = SpecialStart / SpecialEnd
+<SpecialStart> = (QuoteStart / CenterStart / SpStart) [<OWS> Parameters]
+<SpecialEnd>   = QuoteEnd / CenterEnd / SpEnd
+Parameters     = NotNewline
+QuoteStart     = <OWS> <"#+BEGIN_QUOTE">            <OWS>
+CenterStart    = <OWS> <"#+BEGIN_CENTER">           <OWS>
+SpStart        = <OWS> <"#+BEGIN_"> #"[^\n\r\s\t]+" <OWS>
+QuoteEnd       = <OWS> <"#+END_QUOTE">              <OWS>
+CenterEnd      = <OWS> <"#+END_CENTER">             <OWS>
+SpEnd          = <OWS> <"#+END_"> #"[^\n\r\s\t]+"   <OWS>
 
-Title       = TitleWord (<Spaces> TitleWord)*
-<TitleWord> = !(Tags | Priority) NotSpace
+(* Dynamic Blocks *)
 
-Tags        = <":"> TagWord (<":"> TagWord)* <":">
-<TagWord>   = #"[a-zA-Z0-9_@#%]"+
+(* Planning *)
+<PlanningLine>    = Clock / Planning
+Clock             = <OWS> <"CLOCK:"> [<Spaces> TimeStamp] [<Spaces> Duration] <OWS>
+Duration          = #"=>\s+\d+:\d{2}"
+Planning          = PlanningGroup (<OWS> PlanningGroup)*
+PlanningGroup     = PlanningKeyword <":"> <OWS> TimeStamp
+<PlanningKeyword> = "DEADLINE" / "SCHEDULED" / "CLOSED"
+
+(* Timestamps *)
+TimeStampLine     = <OWS> TimeStamp <OWS>
+<TimeStamp>       = InactiveTimestamp / ActiveTimestamp / InactiveRange / ActiveRange
+InactiveTimestamp = <"["> TimeStampBits <"]">
+ActiveTimestamp   = <"<"> TimeStampBits <">">
+InactiveRange     = <"["> TimeStampBits <"]--["> TimeStampBits <"]">
+ActiveRange       = <"<"> TimeStampBits <">--<"> TimeStampBits <">">
+<TimeStampBits>   = Date [<Spaces> (Time | TimeRange)] [<Spaces> Repeater] [<Spaces> Delay]
+Date              = #"\d{4}-\d{2}-\d{2}" [<Spaces> Day]
+Day               = "Mon" / "Tue" / "Wed" / "Thu" / "Fri" / "Sat" / "Sun"
+TimeRange         = Time <"-"> Time
+Time              = #"\d{1,2}:\d{2}"
+Repeater          = ("+" / "++" / ".+") Value Unit
+Delay             = ("-" | "--") Value Unit  
+<Value>           = #"\d+"
+<Unit>            = "h" | "d" | "w" | "m" | "y"
+                     
 
 
 (* Utility *)
-
-<Letter>    = #"[a-zA-Z]"
-<Spaces>    = #"\s+"
-<NotSpace>  = #"[^\s]*";
+<Letter>            = #"[a-zA-Z]"
+<Spaces>            = #"\s+"
+<OWS>               = #"\s*"
+<NotSpace>          = #"[^\s]*";
+<NotNewline>        = #"[^\n\r]*"
+<NotSpaceOrNewline> = #"[^\s\n\r]+"
