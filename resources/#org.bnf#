@@ -30,12 +30,12 @@ Tags         = <":"> TagWord (<":"> TagWord)* <":">
 <SpecialStart> = (QuoteStart / CenterStart / SpStart) [<OWS> Parameters]
 <SpecialEnd>   = QuoteEnd / CenterEnd / SpEnd
 Parameters     = NotNewline
-QuoteStart     = <"#+BEGIN_QUOTE">            
-CenterStart    = <"#+BEGIN_CENTER">           
-SpStart        = <"#+BEGIN_"> #"[^\n\r\s\t]+" 
-QuoteEnd       = <"#+END_QUOTE">              
-CenterEnd      = <"#+END_CENTER">             
-SpEnd          = <"#+END_"> #"[^\n\r\s\t]+"   
+QuoteStart     = <OWS> <"#+BEGIN_QUOTE">           
+CenterStart    = <OWS> <"#+BEGIN_CENTER">          
+SpStart        = <OWS> <"#+BEGIN_"> #"[^\n\r\s\t]+"
+QuoteEnd       = <OWS> <"#+END_QUOTE">             
+CenterEnd      = <OWS> <"#+END_CENTER">            
+SpEnd          = <OWS> <"#+END_"> #"[^\n\r\s\t]+"  
 
 (* Dynamic Blocks *)
 
@@ -45,14 +45,14 @@ DynamicName       = NotSpaceOrNewline
 DynamicParameters = NotNewline
 DynamicEnd        = <"#+END:">
 
-(* Drawers / Properties *)
+(* Drawers *)
 <DrawerLine>     = PropertiesStart / PropertiesLine / DrawerStart / DrawerEnd
 PropertiesStart  = <":PROPERTIES:"> <Spaces> DrawerName 
 DrawerStart      = <":BEGIN:"> <Spaces> DrawerName 
 DrawerName       = NotSpaceOrNewline
 DrawerParameters = NotNewline
 PropertiesLine   = <":"> Property [<":"> Property]* <":">
-<Property>       = #"[^\s\r\n\t:]+"
+Property         = NotSpaceOrNewline
 DrawerEnd        = <":END:">
 
 
