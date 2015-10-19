@@ -46,13 +46,14 @@ DynamicParameters = NotNewline
 DynamicEnd        = <"#+END:">
 
 (* Drawers / Properties *)
-<DrawerLine>     = PropertiesStart / PropertiesLine / DrawerStart / DrawerEnd
+<DrawerLine>     = PropertiesStart / Property / DrawerStart / DrawerEnd
 PropertiesStart  = <":PROPERTIES:"> <Spaces> DrawerName 
 DrawerStart      = <":BEGIN:"> <Spaces> DrawerName 
 DrawerName       = NotSpaceOrNewline
 DrawerParameters = NotNewline
-PropertiesLine   = <":"> Property [<":"> Property]* <":">
-<Property>       = #"[^\s\r\n\t:]+"
+Property         = <":"> PropKey <":"> <OWS> PropValue 
+<PropKey>        = #"[^\s\r\n\t:]+"
+<PropValue>      = NotNewline 
 DrawerEnd        = <":END:">
 
 
